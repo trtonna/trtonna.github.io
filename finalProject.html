@@ -1,0 +1,151 @@
+<html>
+<head>
+	<title>Dodge Ball</title>
+<head>Dodge Ball
+<body>
+<p>INSTRUCTIONS: simply move your mouse along the screen to move the blue paddle.  The objective is to dodge the ball.</p>
+
+<canvas id= "gameCanvas" width = 800 height=600></canvas>
+
+<script>
+//set up canvas
+var canvas;
+var canvasContext;
+//set up ball coordinates and speed control
+var x=x;
+var ballX=20;
+var ballSpeedX=50;
+var ballY = 20;
+var ballSpeedY = 15;
+var	radius=10;
+
+//set up scoring variables
+var player1Score = 0;
+var player2Score = 0;
+var ball1Score = 0;
+
+//set up paddle dimensions and position
+var paddle1Y = 250;
+var paddle2Y = 250;
+const PADDLE_THICKNESS = 15;
+const PADDLE_HEIGHT = 100;
+
+//calculate Mouse Position
+function calculateMousePos(evt) {
+	var rect = canvas.getBoundingClientRect();
+	var root = document.documentElement;
+	var mouseX = evt.client - rect.left - root.scrollLeft;
+	var mouseY = evt.clientY - rect.top - root.scrollTop;
+	return{
+		x:mouseX,
+		y:mouseY
+	};
+}
+
+
+	window.onload = function() {
+		canvas = document.getElementById('gameCanvas');
+		canvasContext = canvas.getContext('2d');
+		
+		var framesPerSecond = 30;
+		setInterval(callEverything, 1000/framesPerSecond);
+		
+		canvas.addEventListener('mousemove',
+			function(evt) {
+				var mousePos = calculateMousePos(evt);
+				paddle1Y = mousePos.y - (PADDLE_HEIGHT/2);
+			});
+}
+		
+
+//reset ball if it hits the wall	
+function ballReset() {
+	ballSpeedX = -ballSpeedX;
+	ballX = canvas.width/2;
+	ballY = canvas.height/2;
+}
+
+//computer moves the "computer" paddle
+function computerMovement(){
+	var paddle2YCenter = paddle2Y + (PADDLE_HEIGHT/2);
+	if (paddle2YCenter < ballY - 35) {
+		paddle2Y = paddle2Y + 16;
+	} else if(paddle2YCenter > ballY + 35){
+		paddle2Y = paddle2Y - 16;
+	}
+}
+
+function callEverything(){
+	moveEverything(); 
+	drawEverything();
+}
+function moveEverything(){
+	computerMovement();
+	
+	if(ballX < 0){
+		if(ballY > paddle1Y && ballY < (paddle1Y + PADDLE_HEIGHT)){
+			ballReset();
+			player2Score++;
+			console.log("hit");
+	} else {
+		ballSpeedX = -ballSpeedX;
+		console.log("missed");
+	}
+   }
+	
+	if(ballX > canvas.width){
+		if(ballY > paddle2Y && ballY < (paddle2Y + PADDLE_HEIGHT)){
+			ballSpeedX = -ballSpeedX;
+		}else{
+			ballReset();
+			player1Score++;
+		}
+	}
+	
+	
+	if(ballY < 0) {
+		ballSpeedY = -ballSpeedY;
+		}
+		if(ballY > canvas.height) {
+			ballSpeedY = -ballSpeedY;	
+		}
+		ballX = ballX + ballSpeedX;
+		ballY = ballY + ballSpeedY;
+		}
+	
+
+	
+	function drawEverything(){
+	//next line blanks out the screen with black
+	canvasContext.fillStyle = 'white';
+	canvasContext.fillRect(0,0,canvas.width, canvas.height);
+	
+	//this is a left player paddle
+	canvasContext.fillStyle = 'blue';
+	canvasContext.fillRect(0, paddle1Y, PADDLE_THICKNESS, PADDLE_HEIGHT);
+	
+	//this is a right computer paddle
+	canvasContext.fillStyle = 'red';
+	canvasContext.fillRect(canvas.width-PADDLE_THICKNESS, paddle2Y, PADDLE_THICKNESS, PADDLE_HEIGHT);
+	
+	
+
+		// next line draws the ball
+        canvasContext.fillStyle = 'red';
+        canvasContext.beginPath();
+        canvasContext.arc(ballX, ballY, radius, 0, Math.PI*2, true);
+        canvasContext.fill();
+        
+    canvasContext.fillText(player1Score, 100, 100);
+    canvasContext.fillText(player2Score, canvas.width - 100, 100);
+    }
+
+	
+
+
+
+
+
+</script>
+</body>
+</html>
